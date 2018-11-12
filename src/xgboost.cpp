@@ -23,7 +23,7 @@ namespace xgboost {
 		}
 
 		for (int stage = 1; stage <= config.n_estimators; ++stage) {
-			cout << "=================================== iter: " << stage << " ===================================" << endl;
+			cout << "=============================== iter: " << stage << " ===============================" << endl;
 			Tree* tree_stage;
 			BaseDecisionTree base_decision_tree = BaseDecisionTree(config);
 			tree_stage = base_decision_tree.fit(features, labels, grad, hess);
@@ -56,6 +56,7 @@ namespace xgboost {
 		float p_0;
 		for (Tree* tree : trees) {
 			pred += config.learning_rate * tree->predict_leaf_value(features);
+
 		}
 		p_0 = 1.0 / (1 + exp(2 * pred));
 		res.push_back(p_0);

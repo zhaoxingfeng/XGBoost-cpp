@@ -21,7 +21,7 @@ namespace xgboost {
 	class BaseDecisionTree {
 	public:
 		BaseDecisionTree(Config conf);
-		~BaseDecisionTree();
+		~BaseDecisionTree() = default;
 		Tree* fit(const vector<vector<float>>& features_in, const vector<float>& labels_in,
 			const vector<float>& grad_in, const vector<float>& hess_in);
 

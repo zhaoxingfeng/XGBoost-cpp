@@ -1,5 +1,4 @@
-﻿#include <string>
-#include <vector>
+﻿#include <vector>
 #include <iostream>
 #include <algorithm>
 #include <numeric>
@@ -10,7 +9,7 @@
 
 namespace xgboost {
 	BaseDecisionTree::BaseDecisionTree(Config conf) :config(conf) {};
-	BaseDecisionTree::~BaseDecisionTree() {};
+	//BaseDecisionTree::~BaseDecisionTree() {};
 
 	//训练单棵回归树
 	Tree* BaseDecisionTree::fit(const vector<vector<float>>& features_in, const vector<float>& labels_in,

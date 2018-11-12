@@ -1,5 +1,4 @@
 #pragma once
-#include <string>
 #include <vector>
 #include "decision_tree.h"
 #include "tree.h"
@@ -19,10 +18,10 @@ namespace xgboost {
 		~XGBoost();
 		void fit(const vector<vector<float>>& features, const vector<float>& labels);
 		vector<float> predict_proba(const vector<float>& features);
-
-	private:
 		const Config config;
 		float pred_0;
+
+	private:
 		vector<Tree*> trees;
 		vector<float> grad;
 		vector<float> hess;

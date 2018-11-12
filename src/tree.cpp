@@ -1,3 +1,4 @@
+#include <string>
 #include <numeric>
 #include <algorithm>
 #include <iostream>
@@ -14,8 +15,7 @@ namespace xgboost {
 		tree_left(nullptr),
 		tree_right(nullptr) {
 	};
-
-	Tree::~Tree() {};
+	//Tree::~Tree() {};
 
 	//递归树的每一个分支，得到叶子节点值
 	float Tree::predict_leaf_value(const vector<float>& dataset_one) {

@@ -1,16 +1,12 @@
 #pragma once
-#include <vector>
-#include <string>
 using namespace std;
 
 
 namespace xgboost {
-	enum TaskType{Train, Predict};
-
 	class Config {
 	public:
 		//n_estimators : int, optional (default=100). Number of boosted trees to fit.
-		int n_estimators = 100;
+		int n_estimators = 20;
 		//max_depth : int, optional (default=10). Maximum tree depth for base learners, -1 means no limit.
 		int max_depth = 10;
 		//learning_rate : float, optional (default=0.1). Boosting learning rate.
@@ -25,6 +21,5 @@ namespace xgboost {
 		float reg_gamma = 0.0;
 		//reg_lambda : float, optional (default=0.0). L2 regularization term on weights.
 		float reg_lambda = 0.0;
-		TaskType task = TaskType::Train;
 	};
 }

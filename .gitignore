@@ -26,8 +26,12 @@ var/
 .idea/
 .DS_Store
 .inspectionProfiles/
+
+# C++
 .vs/
 x64/
+Debug/
+*.vcxproj.user
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
