@@ -32,6 +32,7 @@ var/
 x64/
 Debug/
 *.vcxproj.user
+*.vcxproj.filters
 
 # PyInstaller
 #  Usually these files are written by a python script from a template

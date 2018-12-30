@@ -10,7 +10,7 @@ namespace xgboost {
 	XGBoost::XGBoost(Config conf) :config(conf) {};
 	XGBoost::~XGBoost() {};
 
-	//ÑµÁ·Ä£ĞÍÖ÷º¯ÊıÈë¿Ú
+	//è®­ç»ƒæ¨¡å‹ä¸»å‡½æ•°å…¥å£
 	void XGBoost::fit(const vector<vector<float>>& features, const vector<float>& labels) {
 		float mean = accumulate(labels.begin(), labels.end(), 0) / (float)labels.size();
 		pred_0 = 0.5 * log((1 + mean) / (1 - mean));
@@ -39,7 +39,7 @@ namespace xgboost {
 		}
 	}
 
-	//¼ÆËãÒ»½×ºÍ¶ş½×µ¼Êı
+	//è®¡ç®—ä¸€é˜¶å’ŒäºŒé˜¶å¯¼æ•°
 	Gradients XGBoost::calculate_grad_hess(float y, float y_pred) {
 		Gradients gradients;
 		float pred = 1.0 / (1.0 + exp(-y_pred));
@@ -49,7 +49,7 @@ namespace xgboost {
 		return gradients;
 	}
 
-	//¸ø¶¨Ñù±¾ÌØÕ÷£¬Ô¤²âpÖµ
+	//ç»™å®šæ ·æœ¬ç‰¹å¾ï¼Œé¢„æµ‹på€¼
 	vector<float> XGBoost::predict_proba(const vector<float>& features) {
 		float pred = pred_0;
 		vector<float> res;

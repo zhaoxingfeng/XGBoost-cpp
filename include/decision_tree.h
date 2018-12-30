@@ -10,10 +10,10 @@ using namespace std;
 
 namespace xgboost {
 	struct BestSplitInfo {
-		int best_split_feature;
-		float best_split_value;
-		float best_split_gain;
-		float best_internal_value;
+		int best_split_feature = 0;
+		float best_split_value = 0;
+		float best_split_gain = -1e10;
+		float best_internal_value = 0;
 		vector<int> best_sub_dataset_left;
 		vector<int> best_sub_dataset_right;
 	};
@@ -34,7 +34,8 @@ namespace xgboost {
 		vector<float> hess;
 
 		Tree* _fit(vector<int>& sub_dataset, int depth);
-		BestSplitInfo choose_best_feature(const vector<int>& sub_dataset);
+		BestSplitInfo choose_best_split_feature(const vector<int>& sub_dataset);
+		BestSplitInfo choose_best_split_value(const vector<int>& sub_dataset, int feature_index);
 		float calculate_leaf_value(const vector<int>& sub_dataset);
 		float calculate_split_gain(const float& left_grad_sum, const float& left_hess_sum,
 			const float& right_grad_sum, const float& right_hess_sum);

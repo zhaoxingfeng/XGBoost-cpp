@@ -13,7 +13,7 @@ using namespace xgboost;
 #define API_BEGIN() try {
 #define API_END() } catch(std::runtime_error &_except_) { return -1; } return 0;
 
-//训练模型接口
+//璁粌妯″瀷鎺ュ彛
 XGB_DLL int Train(Config* conf, const float *data, const float *label, int nrow, int ncol, BoosterHandle *out) {
 	API_BEGIN();
 	vector< vector<float> > features(nrow, vector<float>(ncol));
@@ -34,7 +34,7 @@ XGB_DLL int Train(Config* conf, const float *data, const float *label, int nrow,
 	API_END();
 }
 
-//模型预测接口
+//妯″瀷棰勬祴鎺ュ彛
 XGB_DLL int Predict(const float *data, int nrow, int ncol, BoosterHandle *handle, float *out_result) {
 	API_BEGIN();
 	vector< vector<float> > features(nrow, vector<float>(ncol));

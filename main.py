@@ -4,7 +4,7 @@
 @Time: 2018/11/11 15:20
 @Author: zhaoxingfeng
 @Function：调自己写的xgboost C++接口实现模型训练和预测等
-@Version: V1.0
+@Version: V1.1
 """
 from ctypes import *
 import pandas as pd
@@ -74,6 +74,6 @@ if __name__ == '__main__':
     xgb.fit(df.ix[:train_count, :-1], df.ix[:train_count, -1])
 
     from sklearn import metrics
-    print(metrics.roc_auc_score(df.ix[:train_count, -1], xgb.predict_proba(df.ix[:train_count, :-1])[:, 1]))
-    print(metrics.roc_auc_score(df.ix[train_count:, -1], xgb.predict_proba(df.ix[train_count:, :-1])[:, 1]))
-    print(time.time() - start)
+    print("Train auc=%s" % metrics.roc_auc_score(df.ix[:train_count, -1], xgb.predict_proba(df.ix[:train_count, :-1])[:, 1]))
+    print("Test auc=%s" % metrics.roc_auc_score(df.ix[train_count:, -1], xgb.predict_proba(df.ix[train_count:, :-1])[:, 1]))
+    print("Running time=%s s" % (time.time() - start))

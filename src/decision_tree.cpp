@@ -1,4 +1,4 @@
-﻿#include <vector>
+#include <vector>
 #include <iostream>
 #include <algorithm>
 #include <numeric>
@@ -42,7 +42,7 @@ namespace xgboost {
 		}
 
 		if (depth <= config.max_depth) {
-			BestSplitInfo best_split_info = choose_best_feature(sub_dataset);
+			BestSplitInfo best_split_info = choose_best_split_feature(sub_dataset);
 			Tree* tree = new Tree();
 
 			if (best_split_info.best_sub_dataset_left.size() < config.min_data_in_leaf ||
@@ -68,13 +68,37 @@ namespace xgboost {
 	}
 
 	//寻找最优分割特征和分割点
-	BestSplitInfo BaseDecisionTree::choose_best_feature(const vector<int>& sub_dataset) {
-		int best_split_feature;
-		float best_split_value;
-		float best_split_gain = -1e10;
-		float best_internal_value;
-		vector<int> best_sub_dataset_left;
-		vector<int> best_sub_dataset_right;
+	BestSplitInfo BaseDecisionTree::choose_best_split_feature(const vector<int>& sub_dataset) {
+		BestSplitInfo best_split_info;
+
+		//当前节点作为叶子节点时的取值
+		float best_internal_value = calculate_leaf_value(sub_dataset);
+		best_split_info.best_internal_value = best_internal_value;
+		//对每一个特征寻找最优分割点
+		#pragma omp parallel for schedule(dynamic)
+		for (int i = 0; i < features[0].size(); ++i) {
+			BestSplitInfo best_split_value_info = choose_best_split_value(sub_dataset, i);
+			if (best_split_value_info.best_split_gain > best_split_info.best_split_gain) {
+				best_split_info.best_split_gain = best_split_value_info.best_split_gain;
+				best_split_info.best_split_feature = i;
+				best_split_info.best_split_value = best_split_value_info.best_split_value;
+				best_split_info.best_sub_dataset_left = best_split_value_info.best_sub_dataset_left;
+				best_split_info.best_sub_dataset_right = best_split_value_info.best_sub_dataset_right;
+			}
+		}
+		return best_split_info;
+	}
+
+	//给定特征，寻找该特征下的最优分割点
+	BestSplitInfo BaseDecisionTree::choose_best_split_value(const vector<int>& sub_dataset, int feature_index) {
+		//找到该特征下所有可能的分割点
+		vector<float> unique_values;
+		unique_values.push_back(features[0][feature_index]);
+		for (int j = 0; j < sub_dataset.size(); ++j) {
+			if (find(unique_values.begin(), unique_values.end(), features[j][feature_index]) == unique_values.end()) {
+				unique_values.push_back(features[j][feature_index]);
+			}
+		}
 
 		vector<int> sub_dataset_left;
 		vector<int> sub_dataset_right;
@@ -82,51 +106,41 @@ namespace xgboost {
 		float left_hess_sum;
 		float right_grad_sum;
 		float right_hess_sum;
-		
-		for (int i = 0; i < features[0].size(); ++i) {
-			//找到该特征下所有可能的分割点
-			vector<float> unique_values;
-			unique_values.push_back(features[0][i]);
-			for (int j = 0; j < sub_dataset.size(); ++j) {
-				if (find(unique_values.begin(), unique_values.end(), features[j][i]) == unique_values.end()) {
-					unique_values.push_back(features[j][i]);
+		float split_gain;
+
+		BestSplitInfo best_split_info;
+		best_split_info.best_split_feature = feature_index;
+
+		//贪婪搜索，寻找使gain最大的分割点
+		for (float split_value : unique_values) {
+			sub_dataset_left.clear();
+			sub_dataset_right.clear();
+			left_grad_sum = 0;
+			left_hess_sum = 0;
+			right_grad_sum = 0;
+			right_hess_sum = 0;
+
+			for (int index : sub_dataset) {
+				if (features[index][feature_index] <= split_value) {
+					sub_dataset_left.push_back(index);
+					left_grad_sum += grad[index];
+					left_hess_sum += hess[index];
+				}
+				else {
+					sub_dataset_right.push_back(index);
+					right_grad_sum += grad[index];
+					right_hess_sum += hess[index];
 				}
 			}
-
-			//贪婪搜索，寻找使gain最大的分割点
-			for (float split_value : unique_values) {
-				sub_dataset_left.clear();
-				sub_dataset_right.clear();
-				left_grad_sum = 0;
-				left_hess_sum = 0;
-				right_grad_sum = 0;
-				right_hess_sum = 0;
-
-				for (int index : sub_dataset) {
-					if (features[index][i] <= split_value) {
-						sub_dataset_left.push_back(index);
-						left_grad_sum += grad[index];
-						left_hess_sum += hess[index];
-					}
-					else {
-						sub_dataset_right.push_back(index);
-						right_grad_sum += grad[index];
-						right_hess_sum += hess[index];
-					}
-				}
-				float split_gain = calculate_split_gain(left_grad_sum, left_hess_sum, right_grad_sum, right_hess_sum);
-				if (best_split_gain < split_gain) {
-					best_split_feature = i;
-					best_split_value = split_value;
-					best_split_gain = split_gain;
-					best_sub_dataset_left = sub_dataset_left;
-					best_sub_dataset_right = sub_dataset_right;
-				}
+			split_gain = calculate_split_gain(left_grad_sum, left_hess_sum, right_grad_sum, right_hess_sum);
+			if (best_split_info.best_split_gain < split_gain) {
+				best_split_info.best_split_gain = split_gain;
+				best_split_info.best_split_feature = feature_index;
+				best_split_info.best_split_value = split_value;
+				best_split_info.best_sub_dataset_left = sub_dataset_left;
+				best_split_info.best_sub_dataset_right = sub_dataset_right;
 			}
 		}
-		best_internal_value = calculate_leaf_value(sub_dataset);
-		BestSplitInfo best_split_info;
-		best_split_info = { best_split_feature, best_split_value, best_split_gain, best_internal_value, best_sub_dataset_left, best_sub_dataset_right };
 		return best_split_info;
 	}
 

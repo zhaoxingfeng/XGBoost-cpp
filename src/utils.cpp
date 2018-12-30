@@ -2,17 +2,17 @@
 #include "utils.h"
 
 
-//计算模型AUC
+//璁＄畻妯″瀷AUC
 float calculate_auc(vector<float>& labels, vector<float>& pvalues) {
 	return 0.0;
 }
 
-//计算模型KS
+//璁＄畻妯″瀷KS
 float calculate_ks(vector<float>& labels, vector<float>& pvalues) {
 	return 0.0;
 }
 
-//计算模型准确率ACC
+//璁＄畻妯″瀷鍑嗙‘鐜嘇CC
 float calculate_acc(vector<float>& labels, vector<float>& pvalues) {
 	int count_right = 0;
 	for (int i = 0; i < labels.size(); ++i) {

@@ -15,7 +15,7 @@ int main() {
 	clock_t startTime, endTime;
 	startTime = clock();
 
-	//ÉèÖÃÄ£ĞÍ³¬²Î
+	//è®¾ç½®æ¨¡å‹è¶…å‚
 	Config config;
 	config.n_estimators = 5;
 	config.learning_rate = 0.4;
@@ -26,7 +26,7 @@ int main() {
 	config.colsample_bytree = 0.8;
 	config.min_child_weight = 5;
 
-	//¶ÁÈ¡Ñù±¾
+	//è¯»å–æ ·æœ¬
 	pandas::Dataset dataset = pandas::read_csv("./source/pima indians.csv", ',', -1);
 	XGBoost xgboost = XGBoost(config);
 	xgboost.fit(dataset.features, dataset.labels);
@@ -35,7 +35,7 @@ int main() {
 	for (int i = 0; i < dataset.labels.size(); ++i) {
 		pvalues.push_back(xgboost.predict_proba(dataset.features[i])[1]);
 	}
-	//¼ÆËãÄ£ĞÍ×¼È·ÂÊ
+	//è®¡ç®—æ¨¡å‹å‡†ç¡®ç‡
 	cout << "ACC: " << calculate_acc(dataset.labels, pvalues) << endl;
 
 	endTime = clock();

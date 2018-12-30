@@ -17,7 +17,7 @@ namespace xgboost {
 	};
 	//Tree::~Tree() {};
 
-	//µİ¹éÊ÷µÄÃ¿Ò»¸ö·ÖÖ§£¬µÃµ½Ò¶×Ó½ÚµãÖµ
+	//é€’å½’æ ‘çš„æ¯ä¸€ä¸ªåˆ†æ”¯ï¼Œå¾—åˆ°å¶å­èŠ‚ç‚¹å€¼
 	float Tree::predict_leaf_value(const vector<float>& dataset_one) {
 		if (!this->tree_left && !this->tree_right) {
 			return this->leaf_value;
@@ -30,7 +30,7 @@ namespace xgboost {
 		}
 	}
 
-	//µİ¹é´òÓ¡Ê÷½á¹¹£¨jsonĞÎÊ½£©
+	//é€’å½’æ‰“å°æ ‘ç»“æ„ï¼ˆjsonå½¢å¼ï¼‰
 	string Tree::describe_tree() {
 		if (!this->tree_left && !this->tree_right) {
 			return "{leaf_value:" + to_string(this->leaf_value) + "}";
