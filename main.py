@@ -16,24 +16,29 @@ class Config(Structure):
     _fields_ = [("n_estimators", c_int),
                 ("max_depth", c_int),
                 ("learning_rate", c_float),
+                ("min_samples_split", c_int),
                 ("min_data_in_leaf", c_int),
                 ("min_child_weight", c_float),
                 ("colsample_bytree", c_float),
                 ("reg_gamma", c_float),
-                ("reg_lambda", c_float)]
+                ("reg_lambda", c_float),
+                ("max_bin", c_int)]
 
 class XGBClassifier(object):
-    def __init__(self, n_estimators=100, max_depth=10, learning_rate=0.1, min_samples_leaf=1,
-                 colsample_bytree=1.0, min_child_weight=1.0, reg_gamma=0.0, reg_lambda=0.0):
+    def __init__(self, n_estimators=100, max_depth=10, learning_rate=0.1, min_samples_split=2,
+                 min_data_in_leaf=1, colsample_bytree=1.0, min_child_weight=1.0, reg_gamma=0.0,
+                 reg_lambda=0.0, max_bin=100):
         self.config = Config()
         self.config.max_depth = c_int(int(max_depth))
         self.config.n_estimators = c_int(int(n_estimators))
         self.config.learning_rate = c_float(learning_rate)
-        self.config.min_data_in_leaf = c_int(int(min_samples_leaf))
+        self.config.min_samples_split = c_int(int(min_samples_split))
+        self.config.min_data_in_leaf = c_int(int(min_data_in_leaf))
         self.config.min_child_weight = c_float(min_child_weight)
         self.config.colsample_bytree = c_float(colsample_bytree)
         self.config.reg_gamma = c_float(reg_gamma)
         self.config.reg_lambda = c_float(reg_lambda)
+        self.config.max_bin = c_int(max_bin)
         self.LIB = cdll.LoadLibrary(r"x64/Debug/xgboost-cpp.dll")
         self.xgboost_handle = ctypes.c_void_p()
 
@@ -61,19 +66,23 @@ if __name__ == '__main__':
     import time
     start = time.time()
 
-    df = pd.read_csv(r"source/pima indians.csv")
-    xgb = XGBClassifier(n_estimators=5,
+    df = pd.read_csv(r"source/pima indians.csv", header=None)
+    # df = pd.read_csv(r"source/credit_card.csv", header=None, nrows=1000)
+    # df = df.ix[:, 1:].reset_index()
+    xgb = XGBClassifier(n_estimators=10,
                         max_depth=6,
                         learning_rate=0.4,
-                        min_samples_leaf=10,
+                        min_samples_split=50,
+                        min_data_in_leaf=20,
                         colsample_bytree=1.0,
-                        min_child_weight=1,
-                        reg_gamma=0.1,
-                        reg_lambda=0.3)
+                        min_child_weight=5,
+                        reg_gamma=0.3,
+                        reg_lambda=0.3,
+                        max_bin=100)
     train_count = int(0.7 * len(df))
-    xgb.fit(df.ix[:train_count, :-1], df.ix[:train_count, -1])
+    xgb.fit(df.iloc[:train_count, :-1], df.iloc[:train_count, -1])
 
     from sklearn import metrics
-    print("Train auc=%s" % metrics.roc_auc_score(df.ix[:train_count, -1], xgb.predict_proba(df.ix[:train_count, :-1])[:, 1]))
-    print("Test auc=%s" % metrics.roc_auc_score(df.ix[train_count:, -1], xgb.predict_proba(df.ix[train_count:, :-1])[:, 1]))
+    print("Train auc=%s" % metrics.roc_auc_score(df.iloc[:train_count, -1], xgb.predict_proba(df.iloc[:train_count, :-1])[:, 1]))
+    print("Test auc=%s" % metrics.roc_auc_score(df.iloc[train_count:, -1], xgb.predict_proba(df.iloc[train_count:, :-1])[:, 1]))
     print("Running time=%s s" % (time.time() - start))

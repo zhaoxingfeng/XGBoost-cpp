@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-using namespace std;
+#include <string>
 
 
 namespace xgboost {
@@ -8,8 +8,8 @@ namespace xgboost {
 	public:
 		Tree();
 		~Tree() = default;
-		float predict_leaf_value(const vector<float>& dataset_one);
-		string describe_tree();
+		float predict_leaf_value(const std::vector<float>& dataset_one);
+		std::string describe_tree();
 
 		int split_feature;
 		float split_value;

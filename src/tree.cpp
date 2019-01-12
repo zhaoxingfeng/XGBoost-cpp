@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <iostream>
 #include "tree.h"
+using namespace std;
 
 
 namespace xgboost {

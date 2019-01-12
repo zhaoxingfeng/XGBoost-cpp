@@ -39,7 +39,7 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
@@ -152,6 +152,7 @@
     <ClInclude Include="include\config.h" />
     <ClInclude Include="include\c_api.h" />
     <ClInclude Include="include\decision_tree.h" />
+    <ClInclude Include="include\numpy.h" />
     <ClInclude Include="include\pandas.h" />
     <ClInclude Include="include\tree.h" />
     <ClInclude Include="include\utils.h" />
@@ -161,6 +162,7 @@
     <ClCompile Include="src\c_api.cpp" />
     <ClCompile Include="src\decision_tree.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\numpy.cpp" />
     <ClCompile Include="src\pandas.cpp" />
     <ClCompile Include="src\tree.cpp" />
     <ClCompile Include="src\utils.cpp" />

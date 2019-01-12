@@ -5,10 +5,8 @@
 #include "config.h"
 #include "pandas.h"
 #include "xgboost.h"
-using namespace std;
-using namespace xgboost;
 
 
-typedef XGBoost *BoosterHandle;
-XGB_DLL int Train(Config* config, const float *feature, const float *label, int nrow, int ncol, BoosterHandle *out);
+typedef xgboost::XGBoost *BoosterHandle;
+XGB_DLL int Train(xgboost::Config* config, const float *feature, const float *label, int nrow, int ncol, BoosterHandle *out);
 XGB_DLL int Predict(const float *feature, int nrow, int ncol, BoosterHandle *handle, float *out_result);

@@ -5,7 +5,6 @@
 #include "config.h"
 #include "pandas.h"
 #include "tree.h"
-using namespace std;
 
 
 namespace xgboost {
@@ -14,29 +13,29 @@ namespace xgboost {
 		float best_split_value = 0;
 		float best_split_gain = -1e10;
 		float best_internal_value = 0;
-		vector<int> best_sub_dataset_left;
-		vector<int> best_sub_dataset_right;
+		std::vector<int> best_sub_dataset_left;
+		std::vector<int> best_sub_dataset_right;
 	};
 
 	class BaseDecisionTree {
 	public:
 		BaseDecisionTree(Config conf);
 		~BaseDecisionTree() = default;
-		Tree* fit(const vector<vector<float>>& features_in, const vector<float>& labels_in,
-			const vector<float>& grad_in, const vector<float>& hess_in);
+		Tree* fit(const std::vector<std::vector<float>>& features_in, const std::vector<float>& labels_in,
+			const std::vector<float>& grad_in, const std::vector<float>& hess_in);
 
 	private:
 		const Config config;
 		Tree* decision_tree;
-		vector<vector<float>> features;
-		vector<float> labels;
-		vector<float> grad;
-		vector<float> hess;
+		std::vector<std::vector<float>> features;
+		std::vector<float> labels;
+		std::vector<float> grad;
+		std::vector<float> hess;
 
-		Tree* _fit(vector<int>& sub_dataset, int depth);
-		BestSplitInfo choose_best_split_feature(const vector<int>& sub_dataset);
-		BestSplitInfo choose_best_split_value(const vector<int>& sub_dataset, int feature_index);
-		float calculate_leaf_value(const vector<int>& sub_dataset);
+		Tree* _fit(std::vector<int>& sub_dataset, int depth);
+		BestSplitInfo choose_best_split_feature(const std::vector<int>& sub_dataset);
+		BestSplitInfo choose_best_split_value(const std::vector<int>& sub_dataset, int feature_index);
+		float calculate_leaf_value(const std::vector<int>& sub_dataset);
 		float calculate_split_gain(const float& left_grad_sum, const float& left_hess_sum,
 			const float& right_grad_sum, const float& right_hess_sum);
 	};

@@ -1,5 +1,6 @@
 #include <fstream>
 #include "utils.h"
+using namespace std;
 
 
 //计算模型AUC

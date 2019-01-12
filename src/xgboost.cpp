@@ -33,8 +33,8 @@ namespace xgboost {
 			for (int i = 0; i < labels.size(); ++i) {
 				float y_pred = tree_stage->predict_leaf_value(features[i]);
 				gradients = calculate_grad_hess(labels[i], y_pred);
-				grad[i] = grad[i] + config.learning_rate * gradients.grad;
-				hess[i] = hess[i] + config.learning_rate * gradients.hess;
+				grad[i] += config.learning_rate * gradients.grad;
+				hess[i] += config.learning_rate * gradients.hess;
 			}
 		}
 	}
