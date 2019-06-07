@@ -16,14 +16,14 @@ namespace xgboost {
 	//BaseDecisionTree::~BaseDecisionTree() {};
 
 	//训练单棵回归树
-	Tree* BaseDecisionTree::fit(const vector<vector<float>>& features_in, const vector<float>& labels_in,
+	Tree* BaseDecisionTree::fit(const vector<vector<float>>& features_in, const vector<int>& labels_in,
 		const vector<float>& grad_in, const vector<float>& hess_in) {
 		features = features_in;
 		labels = labels_in;
 		grad = grad_in;
 		hess = hess_in;
 		vector<int> sub_dataset;
-		for (int i = 0; i < labels.size(); ++i) {
+		for (size_t i = 0; i < labels.size(); ++i) {
 			sub_dataset.push_back(i);
 		}
 		decision_tree = _fit(sub_dataset, 1);
@@ -40,25 +40,22 @@ namespace xgboost {
 
 		//当前节点样本数量小于最小叶子节点样本数量或二阶导数之和小于给定weight，则停止分裂
 		if (sub_dataset.size() <= config.min_samples_split || sub_hess <= config.min_child_weight) {
-			Tree* tree = new Tree();
-			tree->leaf_value = calculate_leaf_value(sub_dataset);
+			Tree *tree = new Tree();
+			tree->leaf_value = CalculateLeafValue(sub_dataset);
 			return tree;
 		}
 
 		if (depth <= config.max_depth) {
 			int dataset_index;
-			//cout << "depth--" << depth << endl;
-			for (int j = 0; j < sub_dataset.size(); ++j) {
+			for (size_t j = 0; j < sub_dataset.size(); ++j) {
 				dataset_index = sub_dataset[j];
-				//cout << dataset_index << " ";
 			}
-			//cout << endl;
-			BestSplitInfo best_split_info = choose_best_split_feature(sub_dataset);
-			Tree* tree = new Tree();
+			BestSplitInfo best_split_info = ChooseBestSplitFeature(sub_dataset);
+			Tree *tree = new Tree();
 
 			if (best_split_info.best_sub_dataset_left.size() < config.min_data_in_leaf ||
 				best_split_info.best_sub_dataset_right.size() < config.min_data_in_leaf) {
-				tree->leaf_value = calculate_leaf_value(sub_dataset);
+				tree->leaf_value = CalculateLeafValue(sub_dataset);
 				return tree;
 			}
 			else {
@@ -72,18 +69,18 @@ namespace xgboost {
 			}
 		}
 		else {
-			Tree* tree = new Tree();
-			tree->leaf_value = calculate_leaf_value(sub_dataset);
+			Tree *tree = new Tree();
+			tree->leaf_value = CalculateLeafValue(sub_dataset);
 			return tree;
 		}
 	}
 
 	//寻找最优分割特征和分割点
-	BestSplitInfo BaseDecisionTree::choose_best_split_feature(const vector<int>& sub_dataset) {
+	BestSplitInfo BaseDecisionTree::ChooseBestSplitFeature(const vector<int>& sub_dataset) {
 		BestSplitInfo best_split_info;
 
 		//当前节点作为叶子节点时的取值
-		float best_internal_value = calculate_leaf_value(sub_dataset);
+		float best_internal_value = CalculateLeafValue(sub_dataset);
 		best_split_info.best_internal_value = best_internal_value;
 		
 		list<BestSplitInfo> best_split_info_list(features[0].size(), BestSplitInfo());
@@ -91,7 +88,7 @@ namespace xgboost {
 		//对每一个特征寻找最优分割点
 #pragma omp parallel for schedule(static, 1)
 		for (int i = 0; i < features[0].size(); ++i) {
-			best_split_info_list.push_back(choose_best_split_value(sub_dataset, i));
+			best_split_info_list.push_back(ChooseBestSplitValue(sub_dataset, i));
 		}
 
 		list<BestSplitInfo>::iterator iter = best_split_info_list.begin();
@@ -110,14 +107,14 @@ namespace xgboost {
 	}
 
 	//给定特征，寻找该特征下的最优分割点
-	BestSplitInfo BaseDecisionTree::choose_best_split_value(const vector<int>& sub_dataset, int feature_index) {
+	BestSplitInfo BaseDecisionTree::ChooseBestSplitValue(const vector<int>& sub_dataset, int feature_index) {
 		//找到该特征下所有可能的分割点
 		vector<float> feature_values;
 		vector<float> feature_values_unique;
 
 		//如果循环体内部包含有向vector对象添加元素的语句，则不能使用范围for循环
 		int dataset_index;
-		for (int j = 0; j < sub_dataset.size(); ++j) {
+		for (size_t j = 0; j < sub_dataset.size(); ++j) {
 			dataset_index = sub_dataset[j];
 			feature_values.push_back(features[dataset_index][feature_index]);
 			feature_values_unique.push_back(features[dataset_index][feature_index]);
@@ -131,11 +128,11 @@ namespace xgboost {
 			unique_values = feature_values_unique;
 		}
 		else {
-			vector<float> lins = numpy::linspace(0, 100, config.max_bin);
+			vector<float> lins = numpy::Linspace(0, 100, config.max_bin);
 			sort(feature_values.begin(), feature_values.end());
-			for (int i = 0; i < lins.size(); ++i) {
+			for (size_t i = 0; i < lins.size(); ++i) {
 				float p = lins[i];
-				unique_values.push_back(numpy::percentile(feature_values, p));
+				unique_values.push_back(numpy::Percentile(feature_values, p));
 			}
 			unique_values.erase(unique(unique_values.begin(), unique_values.end()), unique_values.end());
 		}
@@ -173,7 +170,7 @@ namespace xgboost {
 					right_hess_sum += hess[index];
 				}
 			}
-			split_gain = calculate_split_gain(left_grad_sum, left_hess_sum, right_grad_sum, right_hess_sum);
+			split_gain = CalculateSplitGain(left_grad_sum, left_hess_sum, right_grad_sum, right_hess_sum);
 			if (best_split_info.best_split_gain < split_gain) {
 				best_split_info.best_split_gain = split_gain;
 				best_split_info.best_split_feature = feature_index;
@@ -186,7 +183,7 @@ namespace xgboost {
 	}
 
 	//计算分裂后的增益
-	float BaseDecisionTree::calculate_split_gain(const float& left_grad_sum, const float& left_hess_sum,
+	float BaseDecisionTree::CalculateSplitGain(const float& left_grad_sum, const float& left_hess_sum,
 		const float& right_grad_sum, const float& right_hess_sum) {
 		float tmp1 = pow(left_grad_sum, 2) / (left_hess_sum + config.reg_lambda);
 		float tmp2 = pow(right_grad_sum, 2) / (right_hess_sum + config.reg_lambda);
@@ -195,7 +192,7 @@ namespace xgboost {
 	}
 
 	//计算叶子节点取值
-	float BaseDecisionTree::calculate_leaf_value(const vector<int>& sub_dataset) {
+	float BaseDecisionTree::CalculateLeafValue(const vector<int>& sub_dataset) {
 		float grad_sum = 0;
 		float hess_sum = 0;
 		for (int index : sub_dataset) {

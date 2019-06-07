@@ -2,7 +2,7 @@
 #include <vector>
 
 
-float calculate_auc(std::vector<float>& labels, std::vector<float>& pvalues);
-float calculate_ks(std::vector<float>& labels, std::vector<float>& pvalues);
-float calculate_acc(std::vector<float>& labels, std::vector<float>& pvalues);
+float CalculateAUC(std::vector<int>& labels, std::vector<float>& pvalues);
+float CalculateKS(std::vector<int>& labels, std::vector<float>& pvalues);
+float CalculateACC(std::vector<int>& labels, std::vector<float>& pvalues);
 

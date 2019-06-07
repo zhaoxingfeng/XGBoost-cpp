@@ -9,14 +9,14 @@ using namespace std;
 
 
 namespace pandas {
-	//读取csv文件，仿照pandas.read_csv
-	Dataset read_csv(string file_path, char sep, float fillna, int n_rows) {
+	//读取csv文件，仿照pandas.ReadCSV
+	Dataset ReadCSV(std::string file_path, char sep, float fillna, int n_rows) {
 		Dataset dataset;
 		vector<vector<float>> features;
-		vector<float> labels;
+		vector<int> labels;
 
 		ifstream ifs(file_path);
-		string line;
+		std::string line;
 		int count_rows = 0;
 		while (getline(ifs, line) && (count_rows < n_rows)) {
 			++count_rows;
@@ -24,7 +24,7 @@ namespace pandas {
 			if (!line.empty()) {
 				stringstream ss(line);
 				vector<float> vect_line;
-				string tmp;
+				std::string tmp;
 				while (getline(ss, tmp, sep)) {
 					if (tmp == "") {
 						vect_line.push_back(fillna);
@@ -33,7 +33,7 @@ namespace pandas {
 						vect_line.push_back(stof(tmp));
 					}
 				}
-				labels.push_back(vect_line.back());
+				labels.push_back(int(vect_line.back()));
 				vect_line.pop_back();
 				features.push_back(vect_line);
 			}
@@ -44,7 +44,7 @@ namespace pandas {
 	}
 
 	// 将给定的向量写到csv文件
-	void save_csv(const vector<float>& dataset_vect, const string file_path) {
+	void SaveCSV(const vector<float>& dataset_vect, const std::string file_path) {
 		ofstream outFile;
 		outFile.open(file_path, ios::out);
 		for (float value : dataset_vect) {

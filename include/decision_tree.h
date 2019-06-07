@@ -21,22 +21,22 @@ namespace xgboost {
 	public:
 		BaseDecisionTree(Config conf);
 		~BaseDecisionTree() = default;
-		Tree* fit(const std::vector<std::vector<float>>& features_in, const std::vector<float>& labels_in,
+		Tree* fit(const std::vector<std::vector<float>>& features_in, const std::vector<int>& labels_in,
 			const std::vector<float>& grad_in, const std::vector<float>& hess_in);
 
 	private:
 		const Config config;
 		Tree* decision_tree;
 		std::vector<std::vector<float>> features;
-		std::vector<float> labels;
+		std::vector<int> labels;
 		std::vector<float> grad;
 		std::vector<float> hess;
 
 		Tree* _fit(std::vector<int>& sub_dataset, int depth);
-		BestSplitInfo choose_best_split_feature(const std::vector<int>& sub_dataset);
-		BestSplitInfo choose_best_split_value(const std::vector<int>& sub_dataset, int feature_index);
-		float calculate_leaf_value(const std::vector<int>& sub_dataset);
-		float calculate_split_gain(const float& left_grad_sum, const float& left_hess_sum,
+		BestSplitInfo ChooseBestSplitFeature(const std::vector<int>& sub_dataset);
+		BestSplitInfo ChooseBestSplitValue(const std::vector<int>& sub_dataset, int feature_index);
+		float CalculateLeafValue(const std::vector<int>& sub_dataset);
+		float CalculateSplitGain(const float& left_grad_sum, const float& left_hess_sum,
 			const float& right_grad_sum, const float& right_hess_sum);
 	};
 }

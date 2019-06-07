@@ -4,9 +4,9 @@
 
 
 namespace numpy {
-	//求分位数，仿照numpy.percentile
+	//求分位数，仿照numpy.Percentile
 	template<typename T, typename VECT_T = std::vector<T>>
-	float percentile(const VECT_T& vect, T p) {
+	float Percentile(const VECT_T& vect, T p) {
 		if (!p) {
 			return (float)vect[0];
 		}
@@ -22,9 +22,9 @@ namespace numpy {
 		}
 	}
 
-	//求等差数列，仿照numpy.linspace
+	//求等差数列，仿照numpy.Linspace
 	template<typename T>
-	std::vector<float> linspace(T start, T end, int n) {
+	std::vector<float> Linspace(T start, T end, int n) {
 		float step = (end - start) * 1.0 / (n - 1);
 		std::vector<float> res;
 		for (int i = 0; i < n; ++i) {
